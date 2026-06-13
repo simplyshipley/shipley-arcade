@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>💩 Splat Happens</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #2a2438;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-family: ui-monospace, Menlo, monospace;
+      color: #b8a8cc;
+      overflow: hidden;
+    }
+    canvas {
+      box-shadow: 0 0 60px rgba(224, 179, 76, 0.18);
+      border: 3px solid #1d1d28;
+      border-radius: 8px;
+      max-width: 100vw;
+      max-height: 100vh;
+      touch-action: none;
+      background: #b8e0ee;
+    }
+    p {
+      margin: 10px 0 0;
+      font-size: 13px;
+      text-align: center;
+      padding: 0 8px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game" width="960" height="540"></canvas>
+  <p>arrows/WASD fly · SPACE poop 💩 · P pause · R restart · ENTER advance</p>
+  <script src="src/core.js"></script>
+  <script src="src/targets.js"></script>
+  <script src="src/game.js"></script>
+  <script src="src/touch-controls.js"></script>
+  <script>
+    (function () {
+      if (typeof TouchControls === 'undefined') return;
+      TouchControls.init({
+        canvas: document.getElementById('game'),
+        dpad: true,
+        buttons: [
+          { label: 'POOP', keys: [' '], color: '#7a5230' },
+          { label: 'OK', keys: ['Enter'], color: '#2aa7a0', util: true },
+          { label: 'II', keys: ['p'], color: '#445', util: true }
+        ]
+      });
+    })();
+  </script>
+</body>
+</html>

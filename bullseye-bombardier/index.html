@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>🎯 Bullseye Bombardier</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #060d1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-family: monospace;
+      color: #5a7ba8;
+    }
+    canvas {
+      box-shadow: 0 0 60px rgba(60, 120, 255, 0.25);
+      border: 2px solid #1c4a8e;
+      border-radius: 6px;
+      max-width: 100vw;
+      max-height: 100vh;
+      touch-action: none;
+    }
+    p { margin: 10px 0 0; font-size: 13px; }
+    @media (max-height: 480px) { p { display: none; } }
+  </style>
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <p>🐤 → 🐦 → 🕊️ → 🦅 → 🦖 &nbsp;|&nbsp; arrows/WASD fly · SPACE drop 💩 · V bird vision · ENTER advance</p>
+  <script src="game-core.js"></script>
+  <script src="game.js"></script>
+  <script src="touch-controls.js"></script>
+  <script>
+    TouchControls.init({
+      canvas: document.getElementById('game'),
+      dpad: true,
+      buttons: [
+        { label: 'DROP', keys: [' '], color: '#8c5a3a' },
+        { label: 'VISION', keys: ['v'], color: '#ffd700' },
+        { label: 'OK', keys: ['Enter'], color: '#1c4a8e', util: true },
+      ],
+    });
+  </script>
+</body>
+</html>
