@@ -32,6 +32,7 @@
 
   function flap(body) {
     body.vy = clampVy(body.vy + PHYS.flapImpulse);
+    body.flapT = 0;   // restart the wing-flap animation (gfx.craft reads flapT)
     return body;
   }
 
@@ -54,6 +55,7 @@
     body.vy = clampVy(body.vy + PHYS.gravity * gravityScale * dt);
     body.x += (body.vx + windX) * dt;
     body.y += body.vy * dt;
+    body.flapT = (body.flapT || 0) + dt;   // time since last flap → wing decay
     return body;
   }
 
