@@ -638,30 +638,40 @@
   }
 
   // ── Input ───────────────────────────────────────────────────────────
+  // Normalize single-character keys to lowercase so Shift/CapsLock can never
+  // desync a keydown from its keyup (which left keys stuck / killed WASD).
+  function norm(k) { return (k && k.length === 1) ? k.toLowerCase() : k; }
+
   function onKeyDown(e) {
-    keys[e.key] = true;
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].indexOf(e.key) >= 0) {
+    var k = norm(e.key);
+    keys[k] = true;
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].indexOf(k) >= 0) {
       e.preventDefault();
     }
     if (e.repeat) return;
 
-    if (e.key === 'Enter') {
+    if (k === 'Enter') {
       if (screen === 'title') screen = 'controls';
       else if (screen === 'controls') { game = newGame(); startFlight(); }
       else if (screen === 'summary') { game = null; screen = 'title'; }
     }
     if (screen === 'flight') {
-      if (e.key === ' ') dropPayload();
-      if (e.key === 'v' || e.key === 'V') {
+      if (k === ' ') dropPayload();
+      if (k === 'v') {
         if (game.vision.active) game.vision.deactivate();
         else game.vision.activate();
       }
     }
   }
-  function onKeyUp(e) { keys[e.key] = false; }
+  function onKeyUp(e) { keys[norm(e.key)] = false; }
+  function clearKeys() { keys = {}; }
 
   window.addEventListener('keydown', onKeyDown);
   window.addEventListener('keyup', onKeyUp);
+  window.addEventListener('blur', clearKeys);
+  if (typeof document !== 'undefined' && document.addEventListener) {
+    document.addEventListener('visibilitychange', function () { if (document.hidden) clearKeys(); });
+  }
 
   // Test hook: lets the headless shell smoke test inspect state.
   window.__BB = {
