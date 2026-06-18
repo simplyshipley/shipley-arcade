@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- user-scalable=no keeps the cabinet from pinch-zooming, BUT the text input
+     still focuses/types fine; viewport-fit=cover for notched phones. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1a1030">
+<meta name="description" content="Ask Cosmic Earl — a mellow fortune-machine Easter egg for onlinebudshop.com.">
+<title>🔮 Cosmic Earl</title>
+<style>
+  :root { --bg:#140a26; --neon:#ff5fa2; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: radial-gradient(120% 90% at 50% 0%, #2a1850 0%, #140a26 60%, #0c0618 100%);
+    font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+    color: #f0e8ff;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+  /* Centered stage; the ask row sits ABOVE the canvas so a phone keyboard
+     never covers it. On focus, body.kb-up nudges the whole stage up. */
+  #wrap {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px; padding: 10px;
+    transition: transform .18s ease;
+  }
+  body.kb-up #wrap { transform: translateY(-16vh); }
+
+  /* The ask row: real <input> + GO button. Kept high + always visible. */
+  #askrow {
+    display: flex; gap: 8px; width: 100%; max-width: 520px; align-items: stretch;
+  }
+  #ask {
+    flex: 1 1 auto; min-width: 0;
+    font: 16px/1.2 ui-monospace, Menlo, monospace; /* 16px = no iOS zoom-on-focus */
+    padding: 12px 14px; border-radius: 12px;
+    border: 3px solid #1d1d28; background: #fff7e6; color: #1d1d28;
+    outline: none;
+  }
+  #ask::placeholder { color: #9a8f7a; }
+  #ask:focus { border-color: var(--neon); box-shadow: 0 0 0 3px rgba(255,95,162,.35); }
+  #ask-go {
+    flex: 0 0 auto; cursor: pointer;
+    font: bold 15px ui-monospace, Menlo, monospace; letter-spacing: .04em;
+    padding: 0 18px; border-radius: 12px;
+    border: 3px solid #1d1d28; background: var(--neon); color: #fff;
+  }
+  #ask-go:active { transform: scale(.96); }
+
+  /* The cabinet canvas scales to fit while keeping its aspect ratio. */
+  #stage {
+    width: min(94vw, 540px);
+    max-height: 78vh;
+    aspect-ratio: 720 / 560;
+    height: auto;
+    border-radius: 18px;
+    border: 3px solid #1d1d28;
+    box-shadow: 0 18px 50px rgba(0,0,0,.55), 0 0 60px rgba(255,95,162,.18);
+    background: #140a26;
+    touch-action: manipulation;
+    display: block;
+  }
+  #hint {
+    font-size: 12px; color: #b9a9da; opacity: .8; text-align: center;
+    min-height: 14px;
+  }
+  noscript { color: #ffce4a; }
+</style>
+</head>
+<body>
+  <div id="wrap">
+    <div id="askrow">
+      <input id="ask" type="text" inputmode="text" autocomplete="off"
+             autocapitalize="sentences" spellcheck="false"
+             maxlength="140" placeholder="Ask Cosmic Earl anything…" aria-label="Ask Cosmic Earl a question">
+      <button id="ask-go" type="button">ASK</button>
+    </div>
+    <canvas id="stage" width="720" height="560" aria-label="Cosmic Earl fortune machine"></canvas>
+    <div id="hint">tap a chip or type a question — Earl reads it and dispenses a card</div>
+  </div>
+  <noscript>Cosmic Earl needs JavaScript to spin up the cabinet.</noscript>
+
+  <!-- Load order: corpus → logic core → shell → touch layer.
+       fortunes.js + core.js are owned by the LOGIC agent; if either is
+       missing, src/game.js boots its inline fallback mirroring the seam. -->
+  <script src="src/fortunes.js"></script>
+  <script src="src/core.js"></script>
+  <script src="src/game.js"></script>
+  <script src="src/touch-controls.js"></script>
+</body>
+</html>
