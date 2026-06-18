@@ -296,6 +296,23 @@
     return aabb(runner.hurtbox(), entityBox(ent, runner.x));
   }
 
+  // ── Bud magnet (forgiveness) ─────────────────────────────────────────
+  // Grabbing buds at exactly the jump arc is a frame-timing ask; the magnet
+  // makes it feel GOOD: while the runner is meaningfully airborne, any
+  // COLLECTIBLE within MAGNET_DX horizontally is reached (the shell then
+  // animates it flying in and collects it). It NEVER reaches hazards, and it
+  // only engages when airborne, so a jump is still required.
+  var MAGNET_DX = 52;        // horizontal reach (px ahead/behind the runner)
+  var MAGNET_MIN_Y = 18;     // must be at least this high (a real jump, not a scrape)
+  function magnetReaches(runner, ent) {
+    if (!ent || ent.kind !== 'collectible' || ent.collected) return false;
+    if (runner.grounded || runner.y < MAGNET_MIN_Y) return false;
+    // ent.dist is the entity's horizontal offset ahead of the runner; its
+    // center sits at dist + w/2. Reach if that center is within MAGNET_DX.
+    var center = ent.dist + (ent.w || 0) / 2;
+    return Math.abs(center) <= MAGNET_DX;
+  }
+
   // ════════════════════════════════════════════════════════════════════════
   //  SCORE KEEPER — distance points + the HARVEST COMBO (×1→×5, window decay)
   // ════════════════════════════════════════════════════════════════════════
@@ -574,6 +591,7 @@
     // physics + derived
     speedAt: speedAt, jumpAirtime: jumpAirtime, jumpApex: jumpApex,
     minReactionDist: minReactionDist, laneBottom: laneBottom,
+    magnetReaches: magnetReaches, MAGNET_DX: MAGNET_DX, MAGNET_MIN_Y: MAGNET_MIN_Y,
     // runner + collision
     Runner: Runner, entityBox: entityBox, aabb: aabb, collides: collides,
     // scoring

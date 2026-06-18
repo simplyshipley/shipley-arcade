@@ -108,6 +108,12 @@
       return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
     }
     function collides(runner, ent) { return aabb(runner.hurtbox(), entityBox(ent, runner.x)); }
+    var MAGNET_DX = 52, MAGNET_MIN_Y = 18;
+    function magnetReaches(runner, ent) {
+      if (!ent || ent.kind !== 'collectible' || ent.collected) return false;
+      if (runner.grounded || runner.y < MAGNET_MIN_Y) return false;
+      return Math.abs(ent.dist + (ent.w || 0) / 2) <= MAGNET_DX;
+    }
 
     function comboMultiplier(combo) { return combo <= 1 ? 1 : Math.min(combo, COMBO_MAX); }
     function ScoreKeeper() {
@@ -215,6 +221,7 @@
       clamp: clamp, lerp: lerp, makeRng: makeRng,
       speedAt: speedAt, jumpAirtime: jumpAirtime, minReactionDist: minReactionDist,
       Runner: Runner, entityBox: entityBox, aabb: aabb, collides: collides, laneBottom: laneBottom,
+      magnetReaches: magnetReaches, MAGNET_DX: MAGNET_DX, MAGNET_MIN_Y: MAGNET_MIN_Y,
       comboMultiplier: comboMultiplier, ScoreKeeper: ScoreKeeper, Spawner: Spawner,
       updateBest: updateBest, formatDistance: formatDistance, rankForScore: rankForScore, shareText: shareText
     };
@@ -463,7 +470,12 @@
       var e = this.entities[i];
       e.dist -= travel;                      // scroll left toward the runner
       if (e.dist + e.w < -RUNNER_X - 40) continue;   // fully past the left edge
-      if (!e.collected && Core.collides(this.runner, e)) {
+      // Bud magnet: a collectible within reach while airborne flies in — makes
+      // grabbing feel forgiving instead of frame-perfect (still needs a jump).
+      if (!e.collected && Core.magnetReaches && Core.magnetReaches(this.runner, e)) {
+        e._magnet = true;
+        this.collect(e);
+      } else if (!e.collected && Core.collides(this.runner, e)) {
         if (e.kind === 'collectible') { this.collect(e); }
         else { this.crash(e); }
       }
