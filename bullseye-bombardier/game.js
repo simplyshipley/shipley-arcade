@@ -152,16 +152,20 @@
 
   function resolveSplat(x, y, bird) {
     var f = game.flight;
-    // Score against the nearest scoreable target.
-    var best = null, bestDist = Infinity;
+    // Score against the BEST-scoring target the splat covers — not merely the
+    // nearest by center. A splat can graze a farther target while the closest
+    // one is out of reach; scoring the nearest there registered a false MISS
+    // and reset the combo even though a real hit was available.
+    var best = null, base = 0, bestDist = Infinity;
     for (var i = 0; i < f.targets.length; i++) {
       var t = f.targets[i];
       if (t.splatted) continue;
       var d = GC.dist(x, y, t.x, t.y);
-      if (d < bestDist) { bestDist = d; best = t; }
+      var s = GC.scoreForDrop(d, t.r, bird.splatRadius, t.golden);
+      if (s > base || (s === base && s > 0 && d < bestDist)) {
+        best = t; base = s; bestDist = d;
+      }
     }
-    var base = 0;
-    if (best) base = GC.scoreForDrop(bestDist, best.r, bird.splatRadius, best.golden);
     var beforeBird = GC.birdForScore(game.score.score);
     var pts = game.score.registerDrop(base);
     f.decals.push({ x: x, y: y, r: bird.splatRadius, t: 6 });
