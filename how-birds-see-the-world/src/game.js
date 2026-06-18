@@ -38,6 +38,17 @@
   var MAX_HAZARDS = 6;        // on-screen hazard cap
   var SCROLL_SPEED = 92;      // px/sec the world scrolls DOWN
   var START_HEARTS = 3;
+
+  // Difficulty: scales target size (the thing you aim at) — bigger = easier
+  // to splat — and a small scroll-speed/heart nudge. Picked on the title
+  // screen with ← →. (Answers "can we change target sizes?")
+  var DIFFICULTIES = [
+    { id: 'easy',   label: 'CHILL',  targetScale: 1.5, speedScale: 0.85, hearts: 4 },
+    { id: 'normal', label: 'NORMAL', targetScale: 1.0, speedScale: 1.0,  hearts: 3 },
+    { id: 'hard',   label: 'GNARLY', targetScale: 0.7, speedScale: 1.2,  hearts: 2 }
+  ];
+  var diffIdx = 1;
+  function diff() { return DIFFICULTIES[diffIdx]; }
   var IFRAMES = 1.4;          // seconds of invulnerability after a hit
 
   var canvas, ctx;
@@ -478,10 +489,14 @@
     var hazSpawner = HZ.HazardSpawner ? new HZ.HazardSpawner({ seed: (seed * 3 + 11) & 0x7fffffff, worldWidth: W, scrollSpeed: SCROLL_SPEED }) : null;
     var propSpawner = TR.PropSpawner ? new TR.PropSpawner({ seed: (seed * 7 + 5) & 0x7fffffff, worldWidth: W, scrollSpeed: SCROLL_SPEED }) : null;
     var carSpawner = TR.CarSpawner ? new TR.CarSpawner({ seed: (seed * 13 + 3) & 0x7fffffff, worldWidth: W, scrollSpeed: SCROLL_SPEED }) : null;
-    var health = GC.Health ? new GC.Health({ hearts: START_HEARTS, iframes: IFRAMES }) : fallbackHealth();
+    var d = diff();
+    var health = GC.Health ? new GC.Health({ hearts: d.hearts, iframes: IFRAMES }) : fallbackHealth();
     return {
       score: new GC.ScoreKeeper(),
       health: health,
+      targetScale: d.targetScale,
+      speedScale: d.speedScale,
+      difficulty: d.label,
       spawner: spawner,
       hazSpawner: hazSpawner,
       propSpawner: propSpawner,
@@ -661,6 +676,7 @@
       nt.react = ''; nt.reactT = 0; nt.bob = Math.random() * 6.28;
       nt.speech = ''; nt.speechT = 0;
       if (nt.hitCount === undefined) nt.hitCount = 0;
+      nt.r = nt.r * (f.targetScale || 1);   // difficulty scales the bullseye size
       f.targets.push(nt);
     }
 
@@ -1484,8 +1500,22 @@
     ctx.fillStyle = '#fff';
     ctx.font = 'italic 15px serif';
     ctx.fillText('park-goers wear bullseyes · dodge the city', W / 2, 246);
+
+    // Difficulty selector (← → to change target size).
+    var d = diff();
+    ctx.font = 'bold 11px ui-monospace, monospace';
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.fillText('DIFFICULTY  (← →)', W / 2, 272);
+    ctx.font = 'bold 22px ui-monospace, monospace';
+    ctx.fillStyle = d.id === 'easy' ? '#7fd47f' : d.id === 'hard' ? '#ff7a6e' : '#ffd23f';
+    ctx.fillText('◀  ' + d.label + '  ▶', W / 2, 296);
+    ctx.font = '10px ui-monospace, monospace';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillText('targets ' + (d.targetScale > 1 ? 'bigger' : d.targetScale < 1 ? 'smaller' : 'normal') + ' · ' + d.hearts + ' hearts', W / 2, 314);
+
     ctx.font = 'bold 18px ui-monospace, monospace';
-    ctx.fillText('— PRESS ENTER —', W / 2, 278);
+    ctx.fillStyle = '#fff';
+    ctx.fillText('— PRESS ENTER —', W / 2, 344);
 
     ctx.font = '13px ui-monospace, monospace';
     ctx.fillStyle = '#fff';
@@ -1722,6 +1752,12 @@
     if (crashed) {
       if (k === 'enter') { crashed = false; game = null; screen = 'title'; }
       return;
+    }
+    if (screen === 'title' && (k === 'arrowleft' || k === 'a')) {
+      diffIdx = (diffIdx + DIFFICULTIES.length - 1) % DIFFICULTIES.length;
+    }
+    if (screen === 'title' && (k === 'arrowright' || k === 'd')) {
+      diffIdx = (diffIdx + 1) % DIFFICULTIES.length;
     }
     if (k === 'enter') {
       if (screen === 'title') startPlay();
