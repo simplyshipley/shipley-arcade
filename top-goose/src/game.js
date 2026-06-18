@@ -164,7 +164,7 @@
     var clamp = core.clamp, damp = core.damp;
     function Bird(opts) {
       opts = opts || {};
-      this.cfg = { speed: 26, maxBank: 0.6, bankRate: 14, lateralAccel: 160, lateralDrag: 3.2, maxPitch: 0.5, pitchRate: 12, climbAccel: 90, verticalDrag: 3.0, halfWidth: 30, groundClear: 4, ceiling: 60, flapBase: 6, flapClimbBoost: 5 };
+      this.cfg = { speed: 26, maxBank: 0.6, bankRate: 14, lateralAccel: 160, lateralDrag: 3.2, maxPitch: 0.5, pitchRate: 12, climbAccel: 150, verticalDrag: 3.0, halfWidth: 30, groundClear: 4, ceiling: 60, flapBase: 6, flapClimbBoost: 5 };
       this.x = opts.x == null ? 0 : opts.x; this.y = opts.y == null ? 24 : opts.y; this.z = opts.z == null ? 0 : opts.z;
       this.vx = 0; this.vy = 0; this.speed = this.cfg.speed; this.bankAngle = 0; this.pitch = 0; this.flapPhase = 0;
     }

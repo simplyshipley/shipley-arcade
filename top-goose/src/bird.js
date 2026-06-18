@@ -51,7 +51,9 @@
     lateralDrag: 3.2,   // damping on vx so it settles, doesn't drift forever
     maxPitch: 0.5,      // ±rad pitch at full vertical steer
     pitchRate: 12,      // snap pitch fast (was 7)
-    climbAccel: 90,     // u/s² vertical at full pitch (was 34)
+    climbAccel: 150,    // u/s² vertical at full pitch — matched to lateral
+                        // authority so climbing feels as responsive as steering
+                        // (measured: climb was ~half the lateral rate)
     verticalDrag: 3.0,  // damping on vy
     halfWidth: 30,      // course half-width: x clamps to ±halfWidth
     groundClear: 4,     // min altitude (never below this)
