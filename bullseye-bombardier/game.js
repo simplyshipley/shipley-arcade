@@ -11,6 +11,14 @@
 
   var W = 900, H = 600;
   var FLIGHT_SECONDS = 60;
+
+  // Play a named sound if the SFX kit is present (guarded for headless tests).
+  function sfx(name) {
+    try {
+      var S = self.SFX;
+      if (S && typeof S[name] === 'function') S[name]();
+    } catch (e) { /* audio is best-effort */ }
+  }
   var RESCUE_SECONDS = 45;
   var GOLDEN_CHANCE = 0.15;
 
@@ -162,12 +170,14 @@
       best.splatted = true;
       var label = '+' + pts + (game.score.combo > 1 ? '  x' + game.score.combo : '');
       floatText(x, y - 20, label, best.golden ? '#ffd700' : '#fff');
-      if (best.golden) floatText(x, y - 44, 'GOLDEN!', '#ffd700');
+      if (best.golden) { floatText(x, y - 44, 'GOLDEN!', '#ffd700'); sfx('golden'); }
+      else sfx('splat');
       shake(bird.shake);
       var afterBird = GC.birdForScore(game.score.score);
       if (afterBird !== beforeBird) {
         toast(afterBird.emoji + ' ' + afterBird.name.toUpperCase() + ' UNLOCKED!');
         shake(8);
+        sfx('fanfare');
       }
     } else {
       floatText(x, y - 20, 'MISS', '#f66');
@@ -177,6 +187,7 @@
   function dropPayload() {
     var f = game.flight;
     f.payloads.push({ x: f.bird.x, y: f.bird.y, t: 0, dur: 0.45 });
+    sfx('toss');
   }
 
   // ── RESCUE mode (side-view interlude) ───────────────────────────────
@@ -260,6 +271,7 @@
           game.hazardHits += 1;
           var res = r.state.hitHazard();
           shake(5);
+          sfx('thud');
           if (res === 'dropped') {
             r.chicks.push({ x: r.bird.x, y: H - 70, taken: false });
             floatText(r.bird.x, r.bird.y - 30, 'CHICK DROPPED!', '#f66');

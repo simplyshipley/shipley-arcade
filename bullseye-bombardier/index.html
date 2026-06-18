@@ -32,7 +32,9 @@
   <canvas id="game"></canvas>
   <p>🐤 → 🐦 → 🕊️ → 🦅 → 🦖 &nbsp;|&nbsp; arrows/WASD fly · SPACE drop 💩 · V bird vision · ENTER advance</p>
   <script src="game-core.js"></script>
+  <script src="sfx.js"></script>
   <script src="game.js"></script>
+  <script>window.SFX && window.SFX.arm(window);</script>
   <script src="touch-controls.js"></script>
   <script>
     TouchControls.init({
