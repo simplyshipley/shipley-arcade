@@ -53,6 +53,11 @@
   var LINE_H_LO = 50, LINE_H_HI = 90; // webs strung at air height
   var RIVAL_MIN = 300, RIVAL_MAX = 500; // rival weaves 300-500 px ahead
   var RIVAL_RESPAWN = 10;     // pegged rival respawns 10s later
+  var CLAIM_LEAD = 28;        // a house is lost only once it passes the player
+                              // (within CLAIM_LEAD ahead) UNDELIVERED, while the
+                              // rival is active — so the player has the whole
+                              // approach to deliver, and pegging the rival
+                              // protects every upcoming house. [#3]
   var HOUSES = 12;            // lantern houses on the route
   var FULL_CLEAR_AT = 8;      // >=8 delivered earns +1500
   var DOG_TELE = 0.8;         // generic telegraph floor (rule: >= 0.8s)
@@ -630,11 +635,14 @@
     rv.u += speed * dt;
     if (rv.u < S.u + RIVAL_MIN) rv.u = S.u + RIVAL_MIN;
     if (rv.u > S.u + RIVAL_MAX) rv.u = S.u + RIVAL_MAX;
-    // He claims any lantern house he passes first — peg him to stop it.
+    // While the rival is on the route, any lantern house that slips past the
+    // player UNDELIVERED is his — peg him (→ 'gone') to protect the rest.
+    // (Was: claimed when the rival's own u passed the house, which — at 300-500
+    // px ahead — stole every house before the player could ever toss it.)
     for (var i = 0; i < S.houses.length; i++) {
       var hh = S.houses[i];
       if (hh.delivered || hh.lost) continue;
-      if (rv.prevU < hh.u && rv.u >= hh.u) {
+      if (hh.u <= S.u + CLAIM_LEAD) {
         hh.lost = true;
         S.rivalClaims += 1;
         floater(world, hh.u, RING_V, 30, 'CLAIMED!', PALETTE.grey);
