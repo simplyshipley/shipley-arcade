@@ -703,6 +703,7 @@
       label: 'TIME',
       value: Math.ceil(S.timeLeft) + 's',
       ratio: S.timeLeft / STAGE_TIME,
+      danger: 'low',   // red when time is nearly gone, not when it's full
     };
   }
 

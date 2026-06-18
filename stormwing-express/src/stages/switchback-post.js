@@ -667,6 +667,7 @@
       label: 'HEAT',
       value: String(Math.round(S.heat.value)),
       ratio: S.heat.ratio(),
+      danger: 'high',   // redline → red when the bar fills up
     };
     world.hud.post = {
       label: 'POST',

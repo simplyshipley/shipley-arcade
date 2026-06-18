@@ -422,7 +422,15 @@
           var r = Math.max(0, Math.min(1, row.ratio));
           ctx.fillStyle = '#272d3c';
           ctx.fillRect(x, 22, 90, 6);
-          ctx.fillStyle = r >= 0.85 ? '#ff5e54' : '#2aa7a0';
+          // Red only signals DANGER, per the row's semantics: danger:'high'
+          // reddens when the bar is near full (heat → redline); danger:'low'
+          // reddens when it's nearly empty (time/progress running out).
+          // Progress bars (no danger flag) stay calm teal — they were glowing
+          // red when the player was WINNING, and TIME reddened with the MOST
+          // time left (inverted). [#11]
+          var danger = (row.danger === 'high' && r >= 0.85) ||
+                       (row.danger === 'low' && r <= 0.18);
+          ctx.fillStyle = danger ? '#ff5e54' : '#2aa7a0';
           ctx.fillRect(x, 22, 90 * r, 6);
         }
         x += 130;
