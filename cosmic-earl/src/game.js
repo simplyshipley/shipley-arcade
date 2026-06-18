@@ -320,6 +320,14 @@
   // ── Canvas layout ─────────────────────────────────────────────────────
   var W = 720, H = 560;     // cabinet footprint (index.html pins it)
 
+  // Play a named sound if the SFX kit is present (guarded for headless tests).
+  function sfx(name) {
+    try {
+      var S = self.SFX;
+      if (S && typeof S[name] === 'function') S[name]();
+    } catch (e) { /* audio is best-effort */ }
+  }
+
   // ── Palette (cel-cartoon: flat fills, one ink colour, warm neon arcade) ─
   var INK = '#1d1d28';
   var OUTLINE = 3;
@@ -450,6 +458,7 @@
     if (!q) return false;
     this.pendingQuestion = q;
     this.riffLine = this.pickRiff(q);
+    sfx('riff');
     this.screen = 'thinking';
     this.thinkTimer = 0;
     this.riff = 0;
@@ -489,6 +498,7 @@
       this.deckIds = res.deck;
       if (res.isNew) this.saveDeck();
     }
+    sfx(card.golden ? 'golden' : 'thunk');
     this.screen = 'card';
     this.cardSlide = 0;
   };

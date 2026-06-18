@@ -366,6 +366,14 @@
   // ── Canvas layout + palette ───────────────────────────────────────────
   var W = 540, H = 720;
   var INK = '#1d1d28';
+
+  // Play a named sound if the SFX kit is present (guarded for headless tests).
+  function sfx(name) {
+    try {
+      var S = self.SFX;
+      if (S && typeof S[name] === 'function') S[name]();
+    } catch (e) { /* audio is best-effort */ }
+  }
   var OUTLINE = 3;
 
   // Cel-cartoon palette (Scooby-Doo × Bob's-Burgers: warm, muted, flat).
@@ -571,6 +579,7 @@
       var pkg = new Core.Toss(this.scooter);
       this.packages.push(pkg);
       this.spawnTossPuff(this.scooter.u, this.scooter.v);
+      sfx('toss');
     }
     this._tossLatch = input.toss;
 
@@ -593,6 +602,7 @@
           var pts = this.score.deliver(result);
           var porch = result.house.porch || result.house;   // porch target point
           this.spawnDelivery(porch.u, porch.v, pts, result.ring === 'bullseye');
+          sfx(result.ring === 'bullseye' ? 'bullseye' : 'deliver');
         } else {
           this.spawnTossPuff(p.u, p.v);   // a miss: a small puff, no penalty
         }
@@ -614,6 +624,7 @@
       if (Route.hazardHits(hazard, this.scooter.u, this.scooter.v)) {
         if (this.scooter.hit()) {
           this.spawnTumble(this.scooter.u, this.scooter.v);
+          sfx('thud');
           if (this.scooter.isDead()) { this.endRun(); return; }
         }
       }

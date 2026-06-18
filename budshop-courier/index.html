@@ -66,7 +66,9 @@
        boots even if core.js / route.js have not loaded (parallel build). -->
   <script src="src/core.js"></script>
   <script src="src/route.js"></script>
+  <script src="src/sfx.js"></script>
   <script src="src/game.js"></script>
+  <script>window.SFX && window.SFX.arm(window);</script>
   <script src="src/touch-controls.js"></script>
   <script>
     // NES touch layer: big TOSS (primary), a steer d-pad (← →), and small

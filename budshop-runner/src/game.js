@@ -269,6 +269,15 @@
   var GROUND_Y = Core.GROUND_Y;          // ground line on the canvas
   var RUNNER_X = Core.RUNNER_X;          // runner's fixed horizontal anchor
 
+  // Play a named sound if the SFX kit is present (guarded so headless tests,
+  // which have no SFX/AudioContext, are unaffected).
+  function sfx(name) {
+    try {
+      var S = (typeof self !== 'undefined' ? self : this) && self.SFX;
+      if (S && typeof S[name] === 'function') S[name]();
+    } catch (e) { /* audio is best-effort, never breaks the game */ }
+  }
+
   // ── Palette (cel-cartoon: flat fills, one ink colour) ────────────────
   var INK = '#1d1d28';
   var OUTLINE = 3;
@@ -453,7 +462,9 @@
     this.runTime += dt;
 
     // Core owns physics. Feed it the held input each frame.
+    var wasGrounded = this.runner.grounded;
     this.runner.update(dt, this.readInput());
+    if (wasGrounded && !this.runner.grounded) sfx('jump');   // took off this frame
 
     // Speed ramps with distance (capped, in core). Accrue distance + score.
     this.speed = Core.speedAt(this.score.distance);
@@ -504,14 +515,17 @@
     if (combo) {
       var pts = this.score.harvestBud();
       this.spawnGrabParticles(sx, sy, (e.ref && e.ref.art && e.ref.art.fill) || '#6fc24a', '+' + pts, true);
+      sfx('coin');
     } else {
       var bonus = this.score.waterPlant();
       this.spawnPlantPop(RUNNER_X + e.dist + e.w / 2);
       this.spawnGrabParticles(sx, sy, (e.ref && e.ref.art && e.ref.art.splash) || '#7fc4e0', '+' + bonus, false);
+      sfx('chime');
     }
   };
 
   Game.prototype.crash = function (e) {
+    sfx('thud');
     var cx = RUNNER_X, cy = GROUND_Y - 28;
     for (var i = 0; i < 18; i++) {
       var ang = (i / 18) * Math.PI * 2;

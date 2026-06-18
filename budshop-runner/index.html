@@ -55,8 +55,11 @@
        shell reads all config from BudCore — it never hard-codes physics. -->
   <script src="src/entities.js"></script>
   <script src="src/core.js"></script>
+  <!-- SOUND: zero-dep synthesized SFX. Loaded before game.js; armed below. -->
+  <script src="src/sfx.js"></script>
   <!-- SHELL: cel-cartoon renderer + input + screens (consumes BudCore state). -->
   <script src="src/game.js"></script>
+  <script>window.SFX && window.SFX.arm(window);</script>
   <!-- MOBILE: vendored control layer. Init AFTER game.js so the canvas exists.
        JUMP primary (Space) + DUCK (ArrowDown) + OK/pause util. Tapping the
        play area also jumps (runner convention) — wired inside game.js. -->
