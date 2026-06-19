@@ -167,6 +167,9 @@
     S.bannerT = 2.5;
     S.shells = [];
     S.frags = [];
+    S.capsule = null;   // clear any leftover Split Feather capsule on transition
+                        // (an uncollected phase-2 capsule used to freeze into
+                        // phase 3 mid-air for the rest of the fight) [#5]
     if (n === 1) {
       S.roc = freshRoc();
       S.plates = PLATES;
