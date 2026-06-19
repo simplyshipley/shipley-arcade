@@ -107,6 +107,12 @@
     if (!P) return;
     if (P.burst) P.burst({ x: x, y: y, count: count || 10, color: color, speed: speed || 120 });
   }
+  // Named presets (the shared weather/juice list) — the Joust-literal stage
+  // should burst real 'feathers' on duel kills and shears, not generic dots (#9).
+  function preset(world, name, x, y, opts) {
+    var P = world.particles;
+    if (P && P.preset) P.preset(name, x, y, opts);
+  }
   // Addendum 4: semantic sfx names only; never raw beeps.
   function sfx(world, name, arg) {
     if (world.audio && world.audio.sfx) world.audio.sfx(name, arg);
@@ -235,7 +241,7 @@
       gen: ++genSeq,
       t: 0, phase: 0, sub: 'fight', phaseT: 0,
       bannerText: '', bannerT: 0,
-      hitstopT: 0,
+      hitstopT: 0, ambientT: 0,
       roc: freshRoc(),
       plates: PLATES,
       coreHits: 0, irisT: 0, coreOpen: false,
@@ -346,7 +352,7 @@
       body.vy = -180;                // Joust kill rebound
       roc.vy = 160;
       world.score.add('kill');       // plate shear scores a kill (spec: unpinned)
-      puff(world, roc.x, roc.y - 20, '#c9b8e8', 18, 200);
+      preset(world, 'feathers', roc.x, roc.y - 20);  // real feather burst on the shear (#9)
       floater(world, roc.x, roc.y - 30, 'PLATE SHEARED', '#c9b8e8');
       sfx(world, 'hit');             // metallic clang (not hull damage)
       if (S.plates <= 0) startKit(2, world);
@@ -413,7 +419,7 @@
     S.hitstopT = HITSTOP;
     S.eggs.push({ x: chick.x, y: chick.y, vx: 0, vy: -60 });
     world.score.add('kill');
-    puff(world, chick.x, chick.y, '#2aa7a0', 12, 150);
+    preset(world, 'feathers', chick.x, chick.y);  // Joust-literal: feathers, not teal dots (#9)
     floater(world, chick.x, chick.y - 16, '+100', '#ffd27a');
     sfx(world, 'hit');
   }
@@ -812,6 +818,21 @@
     S.t += dt;
     S.phaseT += dt;
     if (S.bannerT > 0) S.bannerT -= dt;
+
+    // Ambient gale: keep the storm as the visual through-line in phases 1-2,
+    // which otherwise emit zero weather particles (#9). The storm parts only at
+    // victory (per spec), so this is gated on !S.victory. ~25 streaks/s.
+    if (!S.victory && S.phase >= 1 && S.phase <= 2) {
+      S.ambientT -= dt;
+      if (S.ambientT <= 0) {
+        S.ambientT = 0.04;
+        var ax = Math.random() * world.W;
+        preset(world, 'spray', ax, -6, {
+          count: 2, angle: 2.05, spread: 0.22, speed: 230,
+          gravity: 90, drag: 0.995, life: 1.3, size: 1.8, color: '#9fb8e8',
+        });
+      }
+    }
     // hull.update (i-frame decay) is the SHELL's per-frame job — ticking it
     // here too would halve the invulnerability window.
     // The boss is a scorable target whenever the fight is live.
