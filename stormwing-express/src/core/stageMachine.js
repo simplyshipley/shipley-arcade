@@ -105,7 +105,24 @@
   };
 
   Machine.prototype.draw = function (ctx) {
-    if (this.current) this.current.draw(ctx, this.world);
+    if (this.current) {
+      // Trauma screenshake, centralized: every stage's world draw rides the
+      // camera jitter so the 'cap 8px' juice pillar fires in ALL four stages
+      // (only gale-run consumed it before — #1). The crossfade veil and the
+      // shell's banner/HUD draw outside this transform and stay rock-steady.
+      var cam = this.world.camera;
+      var s = (cam && cam.shakeAmount) ? cam.shakeAmount() : 0;
+      if (s > 0) {
+        var jx = (Math.random() - 0.5) * 2 * s;
+        var jy = (Math.random() - 0.5) * 2 * s;
+        ctx.save();
+        ctx.translate(Math.round(jx), Math.round(jy));
+        this.current.draw(ctx, this.world);
+        ctx.restore();
+      } else {
+        this.current.draw(ctx, this.world);
+      }
+    }
     if (this.fadeT >= 0) {
       var a = this.fadeT / CROSSFADE;
       if (a > 1) a = 1;

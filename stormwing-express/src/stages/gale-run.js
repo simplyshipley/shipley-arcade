@@ -940,9 +940,9 @@
     drawBackdrop(ctx, world, mono);
 
     ctx.save();
-    var shake = world.camera && world.camera.shakeAmount ? world.camera.shakeAmount() : 0;
-    var jx = shake > 0 ? (Math.random() - 0.5) * 2 * shake : 0;
-    ctx.translate(-Math.round(S.camX) + Math.round(jx), 0);
+    // Screenshake is centralized in StageMachine.draw (#1); apply only the
+    // camera scroll here so the two transforms never compound into double-shake.
+    ctx.translate(-Math.round(S.camX), 0);
 
     // Harbor + wrecked platforms (+ waiting keepers and flare glow).
     drawDeck(ctx, world, HARBOR, false);
