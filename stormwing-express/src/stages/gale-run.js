@@ -50,6 +50,7 @@
   var FLOCK_SIZE = 3;
   var LIGHTNING_EVERY = 12;    // ~s between silhouette flashes (pure mood)
   var FLASH_FRAMES = 3;
+  var HITSTOP = 0.04;          // 40ms world-freeze on duel kills (shared juice stack, #10)
 
   // ── Tuned values the spec leaves unpinned ────────────────────────────
   var AIM_TELEGRAPH = 0.85;    // s glow before kite bursts / gull dives (>= 0.8s rule)
@@ -206,7 +207,7 @@
     }
     S = {
       t: 0, timeLeft: STAGE_TIME, showHint: true,
-      win: false, timeUp: false, over: false,
+      win: false, timeUp: false, over: false, hitstopT: 0,
       camX: 0,
       keepers: [], delivered: 0,
       boardT: 0, unloadT: 0, perched: null,
@@ -421,6 +422,7 @@
         var verdict = Collision.altitudeDuel(body, g);
         if (verdict === 'kill') {
           body.vy = -160;                    // Joust kill rebound, no hull loss
+          S.hitstopT = HITSTOP;              // 40ms hitstop — duel kills only, not sling kills (#10)
           killGull(world, g);
         } else if (verdict === 'hurt') {
           g.contactCool = 0.6;
@@ -722,6 +724,10 @@
 
   // ── update ───────────────────────────────────────────────────────────
   function update(dt, world) {
+    if (S.hitstopT > 0) {                    // 40ms world-freeze on duel kills (#10)
+      S.hitstopT -= dt;
+      return;
+    }
     S.t += dt;
     S.timeLeft = Math.max(0, STAGE_TIME - S.t);
     S.showHint = S.t < HINT_TIME;            // dotted arc: first 10s only
