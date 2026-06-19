@@ -448,6 +448,10 @@
   }
 
   function updateThrows(dt, world, axis) {
+    // Integration Addendum 9: no new spawns after the win condition. Once the
+    // depot is reached the stage is winning down — accepting throws here would
+    // keep bundles live forever and starve the StageMachine drain-grace (#2).
+    if (S.reachedDepot) return;
     var body = world.physics;
     var input = world.input;
     S.throwCool -= dt;
@@ -728,9 +732,12 @@
   }
 
   // WIN: reach the depot (always reachable — deliveries drive score only).
-  // Airborne bundles resolve their arcs before isDone returns true.
+  // isDone fires the instant the depot is reached; the StageMachine's 1.5s
+  // drain-grace (it fadeAlls live bundles after the window) resolves any
+  // airborne arcs. Gating on projectiles.drained() here deadlocked the stage
+  // whenever the player kept slinging at the depot (#2) — drainT never ticked.
   function isDone(world) {
-    return !!(S && S.reachedDepot && world.projectiles.drained());
+    return !!(S && S.reachedDepot);
   }
 
   // ── draw ─────────────────────────────────────────────────────────────

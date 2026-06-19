@@ -104,6 +104,7 @@
   var S = null;
   var restartPending = false;
   var checkpointKeepers = null; // delivered keepers stay credited
+  var stageClearAwarded = false; // persists across hull-empty restart (#4)
   var scenery = null;           // draw-only; local rng, never world.rng
 
   function sfx(world, name, arg) {
@@ -141,6 +142,14 @@
   // Route ALL player damage through hull + tailwind (contract). The shell
   // self-wires the hull-damage thud/flash/trauma — never double-fire here.
   function damagePlayer(world, opts) {
+    // Stage already won/timed-out: the machine still ticks update for ~1.5s of
+    // drain-grace with shells/frags/gulls live. A hit here must NOT route into
+    // gameover -> requestRestart — that restarted a finished stage and re-awarded
+    // stageClear (#4). Guard on the isDone condition, NOT S.over: S.over is
+    // recomputed at the TOP of update (line ~726) while the win is set later the
+    // same frame in updateHarbor, so S.over lags a frame and a same-frame gull
+    // hit would slip through. win||timeUp is true the instant the stage ends.
+    if (S && (S.win || S.timeUp)) return false;
     opts = opts || {};
     var res = world.hull.damage(1);
     if (res === 'shrugged') return false;
@@ -193,6 +202,7 @@
       restartPending = false;
     } else {
       checkpointKeepers = null;
+      stageClearAwarded = false; // fresh entry only; a restart keeps the flag
     }
     S = {
       t: 0, timeLeft: STAGE_TIME, showHint: true,
@@ -342,9 +352,12 @@
 
     if (!S.win && S.delivered >= KEEPER_TOTAL) {
       S.win = true;                          // all 6 home ends the stage early
-      world.score.add('stageClear');
-      floater(world, HARBOR.cx, HARBOR.y - 56, 'ALL KEEPERS HOME', '#ffd27a');
-      sfx(world, 'delivery');
+      if (!stageClearAwarded) {              // award exactly once per playthrough (#4)
+        stageClearAwarded = true;
+        world.score.add('stageClear');
+        floater(world, HARBOR.cx, HARBOR.y - 56, 'ALL KEEPERS HOME', '#ffd27a');
+        sfx(world, 'delivery');
+      }
     }
   }
 
