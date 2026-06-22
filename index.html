@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>🕹️ Shipley Arcade</title>
+  <link rel="icon" type="image/png" href="./logos/arcade.png">
+  <meta property="og:title" content="Shipley Arcade">
+  <meta property="og:description" content="8 zero-dependency HTML5 canvas games — phone &amp; desktop. Tap, play, share.">
+  <meta property="og:image" content="./logos/arcade.png">
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { margin: 0; min-height: 100%; color: #d6e2f5;
@@ -44,14 +48,12 @@
     a.card:hover { transform: translateY(-3px);
       border-color: rgba(127,212,255,.5); box-shadow: 0 14px 38px rgba(40,120,220,.30); }
     a.card:active { transform: translateY(0) scale(.99); }
-    .screen { height: 96px; display: flex; align-items: center; justify-content: center;
-      font-size: 54px; line-height: 1;
+    .screen { display: block; line-height: 0;
       background:
-        radial-gradient(120px 80px at 50% 40%, rgba(127,212,255,.18), transparent 70%),
         repeating-linear-gradient(180deg, rgba(255,255,255,.03) 0 2px, transparent 2px 4px),
         linear-gradient(180deg, #0a1020, #0a1226);
-      border-bottom: 1px solid rgba(120,160,255,.14);
-      text-shadow: 0 4px 14px rgba(0,0,0,.5); }
+      border-bottom: 1px solid rgba(120,160,255,.14); }
+    .screen img.logo { width: 100%; height: auto; display: block; }
     .body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
     .body h2 { margin: 0; font-size: 16px; color: #fff; letter-spacing: .5px; }
     .body p { margin: 0; font-size: 12.5px; line-height: 1.5; color: #9fb2d4; flex: 1; }
@@ -71,65 +73,57 @@
     </header>
     <div class="grid">
       <a class="card" href="./how-birds-see-the-world/index.html">
-        <div class="screen">🦅</div>
+        <div class="screen"><img class="logo" src="./logos/how-birds-see-the-world.png" alt="How Birds See The World" loading="lazy"></div>
         <div class="body">
-          <h2>How Birds See The World</h2>
           <p>Fly up a scrolling park, poop on the bullseye everyone wears. v2 adds hazards, cars & city blocks.</p>
           <span class="play">PLAY ▶</span>
         </div>
       </a>
       <a class="card" href="./top-goose/index.html">
-        <div class="screen">🪿</div>
+        <div class="screen"><img class="logo" src="./logos/top-goose.png" alt="Top Goose" loading="lazy"></div>
         <div class="body">
-          <h2>Top Goose</h2>
           <p>Pseudo-3D flying-and-pooping. Four cameras incl. a top-down bombsight, three modes.</p>
           <span class="play">PLAY ▶</span>
         </div>
       </a>
       <a class="card" href="./splat-happens/index.html">
-        <div class="screen">💩</div>
+        <div class="screen"><img class="logo" src="./logos/splat-happens.png" alt="Splat Happens" loading="lazy"></div>
         <div class="body">
-          <h2>Splat Happens</h2>
           <p>Slapstick park comedy — twelve characters, each reacts differently when you splat them.</p>
           <span class="play">PLAY ▶</span>
         </div>
       </a>
       <a class="card" href="./bullseye-bombardier/index.html">
-        <div class="screen">🎯</div>
+        <div class="screen"><img class="logo" src="./logos/bullseye-bombardier.png" alt="Bullseye Bombardier" loading="lazy"></div>
         <div class="body">
-          <h2>Bullseye Bombardier</h2>
           <p>The original. Drop payloads on bullseye targets; climb from Sparrow to Pterodactyl.</p>
           <span class="play">PLAY ▶</span>
         </div>
       </a>
       <a class="card" href="./stormwing-express/index.html">
-        <div class="screen">🪽</div>
+        <div class="screen"><img class="logo" src="./logos/stormwing-express.png" alt="Stormwing Express" loading="lazy"></div>
         <div class="body">
-          <h2>Stormwing Express</h2>
           <p>A four-stage flap-and-sling courier through one storm day.</p>
           <span class="play">PLAY ▶</span>
         </div>
       </a>
       <a class="card" href="./budshop-runner/index.html">
-        <div class="screen">🌿</div>
+        <div class="screen"><img class="logo" src="./logos/budshop-runner.png" alt="Budshop Runner" loading="lazy"></div>
         <div class="body">
-          <h2>Budshop Runner</h2>
           <p>Endless runner — a budtender grabs buds, waters plants, and dodges the hazards. Jump and duck to go the distance.</p>
           <span class="play">PLAY ▶</span>
         </div>
       </a>
       <a class="card" href="./budshop-courier/index.html">
-        <div class="screen">📦</div>
+        <div class="screen"><img class="logo" src="./logos/budshop-courier.png" alt="Budshop Courier" loading="lazy"></div>
         <div class="body">
-          <h2>Budshop Courier</h2>
           <p>Paperboy-style delivery — ride the route, toss packages onto porches, dodge the street. Time your throws for bullseyes.</p>
           <span class="play">PLAY ▶</span>
         </div>
       </a>
       <a class="card" href="./cosmic-earl/index.html">
-        <div class="screen">🔮</div>
+        <div class="screen"><img class="logo" src="./logos/cosmic-earl.png" alt="Cosmic Earl" loading="lazy"></div>
         <div class="body">
-          <h2>Cosmic Earl</h2>
           <p>Ask the mellow fortune-teller anything — shop FAQ, life, the universe — and collect his fortune cards. Rare golden cards hide a discount code.</p>
           <span class="play">PLAY ▶</span>
         </div>
